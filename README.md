@@ -1,59 +1,38 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚡ Faruk AI - Smart Search Assistant
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Faruk AI হলো একটি আধুনিক AI-powered search ইঞ্জিন। এটি ইন্টারনেটের রিয়েল-টাইম ডাটা ব্যবহার করে আপনার প্রশ্নের সঠিক এবং তথ্যবহুল উত্তর প্রদান করে। এটি **Groq AI (Llama-3.3-70b)** এবং **Tavily Search API** এর সমন্বয়ে তৈরি করা হয়েছে।
 
-## About Laravel
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Laravel](https://img.shields.io/badge/Framework-Laravel_11-red.svg)
+![Tailwind](https://img.shields.io/badge/CSS-Tailwind-06B6D4.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ মূল ফিচারসমূহ (Features)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 🔍 **Real-time Web Search:** Tavily API ব্যবহার করে ইন্টারনেটের লেটেস্ট তথ্য খুঁজে বের করে।
+- 🧠 **Advanced AI Reasoning:** Groq Cloud-এর মাধ্যমে Llama-3.3-70b মডেল ব্যবহার করে দ্রুত উত্তর প্রদান।
+- 💬 **Conversation History:** ব্যবহারকারীরা তাদের আগের সব চ্যাট হিস্ট্রি দেখতে পারে (Database persistence)।
+- 📝 **Markdown & Code Support:** চ্যাটবক্সের ভেতর কোড হাইলাইটিং এবং সুন্দর মার্কডাউন ফরম্যাটিং।
+- 📱 **Fully Responsive:** মোবাইল এবং ডেক্সটপ সব ডিভাইসে ব্যবহারযোগ্য।
+- 🔒 **User Authentication:** লগইন সিস্টেম এবং ইউজার-ভিত্তিক ডাটা ম্যানেজমেন্ট।
+- 🚦 **Usage Limits:** প্রতিটি কনভারসেশনে ৪টি করে ফলো-আপ প্রশ্নের লিমিট সিস্টেম।
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠 টেক স্ট্যাক (Tech Stack)
 
-## Learning Laravel
+| ক্যাটাগরি | টেকনোলজি |
+| :--- | :--- |
+| **Backend** | Laravel 11 (PHP) |
+| **Frontend** | Tailwind CSS, Alpine.js (Optional), FontAwesome |
+| **Database** | MySQL |
+| **AI Model** | Groq (Llama-3.3-70b-versatile) |
+| **Search Engine** | Tavily Search API |
+| **Rendering** | Marked.js (Markdown), Highlight.js (Code highlighting) |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🚀 প্রোজেক্ট সেটআপ (Installation Guide)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+আপনার লোকাল মেশিনে এটি রান করতে নিচের ধাপগুলো অনুসরণ করুন:
 
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **রিপোজিটরি ক্লোন করুন:**
+   ```bash
+   git clone https://github.com/your-username/faruk-ai.git
+   cd faruk-ai
