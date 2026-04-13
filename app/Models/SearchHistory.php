@@ -11,6 +11,8 @@ class SearchHistory extends Model
     'conversation_id',
     'query',
     'answer',
+    'file_name',
+    'file_path',
     'sources'
 ];
 

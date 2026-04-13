@@ -11,7 +11,7 @@
         <path fill='%230066ff' d='M296 160H180.6l31.1-144c3.5-16.1-12.8-28.6-27.1-20.6l-160 96C17.8 98.7 16 104.2 16 110c0 9.9 8.1 18 18 18h115.4l-31.1 144c-3.5 16.1 12.8 28.6 27.1 20.6l160-96c6.8-4.3 8.6-9.8 8.6-15.6c0-9.9-8.1-18-18-18z'/>
         </svg>">
 
-    <!-- Markdown and Code Highlighting Libraries -->
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -23,7 +23,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         #sidebar { transition: transform 0.3s ease-in-out; }
 
-        /* Code Block Styling like ChatGPT */
         pre {
             background-color: #0d1117;
             border-radius: 8px;
@@ -35,8 +34,6 @@
         code { font-family: 'Fira Code', monospace; font-size: 0.9rem; }
         .markdown-content h1, .markdown-content h2 { font-weight: bold; margin-bottom: 10px; }
         .markdown-content p { margin-bottom: 15px; }
-
-        /* Copy Button for Code Box */
         .copy-code-btn {
             position: absolute;
             top: 8px;
@@ -88,6 +85,11 @@
                         class="block p-3 text-sm {{ ($currentConversationId ?? '') == $item->conversation_id ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-200 rounded-xl truncate transition">
                             <i class="fa-regular fa-message mr-2 text-gray-400"></i> {{ $item->query }}
                         </a>
+                        @if(isset($msg->file_name) && $msg->file_name)
+                            <div class="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs border border-blue-100">
+                                <i class="fa-solid fa-file-image"></i> {{ $msg->file_name }} (Analyzed)
+                            </div>
+                        @endif
                     @endforeach
                 @else
                     <div class="p-4 bg-blue-50 rounded-2xl text-center">
@@ -157,11 +159,36 @@
                             <h2 class="text-xl md:text-3xl font-bold text-gray-900 leading-tight">{{ $msg->query }}</h2>
                         </div>
 
+
                         <div class="flex gap-4 md:gap-6 mb-16 animate-fade-in">
                             <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg">
                                 <i class="fa-solid fa-bolt text-sm"></i>
                             </div>
                             <div class="flex-1 overflow-hidden">
+                                    @if(isset($msg->file_name) && $msg->file_name)
+                                        <div class="mt-4">
+                                            @php
+                                                $extension = pathinfo($msg->file_name, PATHINFO_EXTENSION);
+                                                $isImg = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp']);
+                                            @endphp
+
+                                            @if($isImg && isset($msg->file_path))
+                                                <!-- preview for image -->
+                                                <div class="mb-2 text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 w-fit px-2 py-1 rounded">
+                                                    <i class="fa-solid fa-image"></i> {{ $msg->file_name }}
+                                                </div>
+                                                <img src="{{ asset('storage/' . $msg->file_path) }}"
+                                                    class="max-w-full md:max-w-sm rounded-2xl border border-gray-100 shadow-sm cursor-zoom-in"
+                                                    onclick="window.open(this.src, '_blank')">
+                                            @else
+                                                <!-- name fro pdf -->
+                                                <div class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+                                                    <i class="fa-solid {{ $extension == 'pdf' ? 'fa-file-pdf text-red-500' : 'fa-file-lines text-blue-500' }}"></i>
+                                                    <span class="font-bold">{{ $msg->file_name }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 <!-- AI Response (Markdown processed via JS) -->
                                 <div class="markdown-content prose prose-base md:prose-lg max-w-none text-gray-800 leading-relaxed" data-content="{{ $msg->answer }}">
                                     <!-- Rendered Content will appear here -->
@@ -203,51 +230,54 @@
 
         <!-- Search Form -->
 
-        <div class="absolute bottom-2 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-12 pb-6 md:pb-8 px-4">
+        <div class="absolute bottom-8 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-12 pb-6 md:pb-8 px-4">
             <div class="max-w-3xl mx-auto">
+                <!-- Error Message Display -->
+                @if(session('error'))
+                    <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl flex items-center gap-2 animate-fade-in">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
+                    </div>
+                @endif
 
                 @php
-
                     $limitReached = (isset($messageCount) && $messageCount >= 4);
                 @endphp
 
                 @if($limitReached)
-
                     <div class="animate-fade-in text-center">
-                        <a href="{{ route('search.index') }}"
-                        class="inline-flex items-center justify-center gap-2 w-full p-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl hover:bg-blue-700 transition active:scale-95">
+                        <a href="{{ route('search.index') }}" class="inline-flex items-center justify-center gap-2 w-full p-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl hover:bg-blue-700 transition active:scale-95">
                             <i class="fa-solid fa-plus-circle"></i> Open New Chat to Continue
                         </a>
                         <p class="text-[10px] text-gray-400 mt-3 uppercase tracking-widest">Conversation limit reached (4/4)</p>
                     </div>
                 @else
-
-                    <form action="{{ route('search.ask') }}" method="POST" class="relative group">
+                    <form action="{{ route('search.ask') }}" method="POST" enctype="multipart/form-data" class="relative group bg-white border border-gray-200 rounded-2xl shadow-xl focus-within:ring-2 focus-within:ring-blue-500/30 transition-all">
                         @csrf
                         <input type="hidden" name="conversation_id" value="{{ $currentConversationId ?? '' }}">
 
-                        <textarea
-                            name="query_text"
-                            rows="1"
-                            required
-                            placeholder="Ask a follow-up..."
-                            oninput="autoResize(this)"
-                            class="w-full p-4 pr-14 md:p-5 md:pr-16 rounded-2xl border border-gray-200 shadow-xl
-                            focus:outline-none focus:ring-2 focus:ring-blue-500/30
-                            bg-white text-base md:text-lg transition-all resize-none overflow-hidden max-h-40 overflow-y-auto resize-none"></textarea>
+                        <!-- File Preview Area -->
+                        <div id="file-preview" class="hidden px-4 pt-3 flex items-center gap-2"></div>
 
-                        <button type="submit"
-                            class="absolute right-2 top-2 md:right-3 md:top-3 bg-blue-600 text-white w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center hover:bg-blue-700 transition shadow-lg active:scale-95">
-                            <i class="fa-solid fa-arrow-up text-lg"></i>
-                        </button>
+                        <div class="flex items-center px-2">
+                            <!-- Image Upload Button -->
+                            <label class="cursor-pointer p-3 text-gray-400 hover:text-blue-600 transition">
+                                <i class="fa-solid fa-camera text-xl"></i>
+                                <input type="file" name="file_upload" id="file_upload" class="hidden" accept="image/*,.pdf,.txt" onchange="previewFile(this)">
+                            </label>
+
+                            <textarea
+                                name="query_text"
+                                rows="1"
+                                placeholder="upload (2/day).."
+                                oninput="autoResize(this)"
+                                class="flex-1 p-4 bg-transparent outline-none text-base md:text-lg resize-none max-h-40 overflow-y-auto"></textarea>
+
+                            <button type="submit" class="bg-blue-600 text-white w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center hover:bg-blue-700 transition shadow-lg active:scale-95 shrink-0 m-2">
+                                <i class="fa-solid fa-arrow-up text-lg"></i>
+                            </button>
+                        </div>
                     </form>
-                    @if(isset($messageCount))
-                        <p class="text-[9px] text-center text-gray-400 mt-3 uppercase tracking-widest">
-                            {{ $messageCount }} of 4 questions used
-                        </p>
-                    @endif
                 @endif
-
             </div>
         </div>
     </main>
@@ -258,7 +288,7 @@
     }
     </script>
     <script>
-    // ১. Markdown Render (Marked.js ব্যবহার করে)
+    // ১. Markdown Render (Marked.js )
     document.querySelectorAll('.markdown-content').forEach(div => {
         const rawContent = div.getAttribute('data-content');
         if (rawContent) {
@@ -266,15 +296,15 @@
         }
     });
 
-    // ২. Syntax Highlighting এবং কোড বক্সের কপি বাটন
+    // ২. Syntax Highlighting
     function setupCodeBlocks() {
         document.querySelectorAll('pre code').forEach((block) => {
             hljs.highlightElement(block);
 
             const pre = block.parentElement;
-            // যদি আগে থেকে বাটন না থাকে তবেই যোগ করবে
+
             if (!pre.querySelector('.copy-code-btn')) {
-                pre.style.position = 'relative'; // পজিশন নিশ্চিত করা
+                pre.style.position = 'relative';
                 const btn = document.createElement('button');
                 btn.className = 'copy-code-btn';
                 btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
@@ -288,11 +318,10 @@
         });
     }
 
-    // ৩. টেক্সট কপি করার মাস্টার ফাংশন (সব ব্রাউজারে কাজ করবে)
+
     function copyTextToClipboard(text, btn) {
         const originalHTML = btn.innerHTML;
 
-        // আধুনিক পদ্ধতি
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
                 showSuccess(btn, originalHTML);
@@ -300,12 +329,12 @@
                 fallbackCopyTextToClipboard(text, btn, originalHTML);
             });
         } else {
-            // পুরনো বা HTTP এর জন্য অল্টারনেটিভ পদ্ধতি
+
             fallbackCopyTextToClipboard(text, btn, originalHTML);
         }
     }
 
-    // অল্টারনেটিভ কপি পদ্ধতি (Textarea ব্যবহার করে)
+
     function fallbackCopyTextToClipboard(text, btn, originalHTML) {
         const textArea = document.createElement("textarea");
         textArea.value = text;
@@ -320,7 +349,7 @@
         document.body.removeChild(textArea);
     }
 
-    // কপি সফল হলে বাটন টেক্সট পরিবর্তন করা
+
     function showSuccess(btn, originalHTML) {
         btn.innerHTML = '<i class="fa-solid fa-check text-green-500"></i> Copied!';
         btn.classList.add('text-green-500');
@@ -330,30 +359,66 @@
         }, 2000);
     }
 
-    // ৪. ফুল উত্তর কপি করার বাটন ফাংশন
+
     function copyToClipboard(btn) {
         const text = btn.getAttribute('data-text');
         copyTextToClipboard(text, btn);
     }
 
-    // পেজ লোড হলে ফাংশনগুলো রান করা
+
     document.addEventListener('DOMContentLoaded', () => {
         setupCodeBlocks();
 
-        // অটো স্ক্রল ডাউন
         const container = document.getElementById('chat-container');
         if (container) {
             container.scrollTop = container.scrollHeight;
         }
     });
 
-    // সাইডবার টগল
+
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
     }
+
+
+
+
+
+
+    function previewFile(input) {
+    const preview = document.getElementById('file-preview');
+    preview.innerHTML = '';
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        preview.classList.remove('hidden');
+
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `
+                    <div class="relative">
+                        <img src="${e.target.result}" class="h-12 w-12 object-cover rounded-lg border">
+                        <button onclick="removeFile()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center">×</button>
+                    </div>`;
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = `
+                <div class="bg-gray-100 px-3 py-1 rounded-full text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-blue-600"></i> ${file.name}
+                    <button onclick="removeFile()" class="text-red-500 font-bold">×</button>
+                </div>`;
+        }
+    }
+}
+
+function removeFile() {
+    document.getElementById('file_upload').value = '';
+    document.getElementById('file-preview').classList.add('hidden');
+}
 </script>
 </body>
 </html>
